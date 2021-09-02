@@ -1,8 +1,10 @@
+import datetime
+
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import Monitor, Bid, Allocation
-from .serializers import MonitorSerializer, AllocationSerializer, BidSerializer
+from .models import BidMonitor, Bid, Allocation
+from .serializers import BidMonitorSerializer, AllocationSerializer, BidSerializer
 
 
 class CreateBid(generics.CreateAPIView):
@@ -11,21 +13,26 @@ class CreateBid(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if not serializer.is_valid(raise_exceptions=True):
-            return Response({"message": "Something went wrong. Please try again later"},
-                            status=status.HTTP_400_BAD_REQUEST)
+        if not serializer.is_valid(raise_exception=True):
+            return Response(
+                {"message": "Something went wrong. Please try again later"},
+                status=status.HTTP_400_BAD_REQUEST)
 
-        creation_date = request.data.get('timestamp')
+        creation_datetime = datetime.datetime.now()
+        monitor = BidMonitor.objects.first()
+        bidding_window = str(monitor.bidding_window)[:19]
 
-        bidding_window = Monitor.objects.first()
-        bidding_window = bidding_window
+        window = datetime.datetime.strptime(bidding_window, "%Y-%m-%d %H:%M:%S")
 
-        if creation_date < bidding_window and serializer.is_valid():
-            serializer.save(timestamp=creation_date)
-            return Response({"message": "Your bid has been successfully created"}, status=status.HTTP_201_CREATED)
+        if creation_datetime < window and serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Your bid has been successfully created on " + str(creation_datetime)},
+                status=status.HTTP_201_CREATED)
         else:
-            return Response({"message": "Sorry! The bidding window has closed. You cannot place a bid at this time"},
-                            status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Sorry! The bidding window has closed. You cannot place a bid at this time"},
+                status=status.HTTP_400_BAD_REQUEST)
 
 
 class DetailBid(generics.RetrieveUpdateDestroyAPIView):
@@ -36,3 +43,13 @@ class DetailBid(generics.RetrieveUpdateDestroyAPIView):
 class AllBids(generics.ListAPIView):
     queryset = Bid.objects.all()
     serializer_class = BidSerializer
+
+
+class CreateMonitor(generics.CreateAPIView):
+    queryset = BidMonitor.objects.all()
+    serializer_class = BidMonitorSerializer
+
+
+class DetailMonitor(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BidMonitor.objects.all()
+    serializer_class = BidMonitorSerializer

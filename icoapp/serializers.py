@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Allocation, Bid, Monitor
+from .models import Allocation, Bid, BidMonitor
 
 
 class BidSerializer(serializers.ModelSerializer):
@@ -14,7 +14,7 @@ class AllocationSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class MonitorSerializer(serializers.ModelSerializer):
+class BidMonitorSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Monitor
+        model = BidMonitor
         fields = '__all__'
