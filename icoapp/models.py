@@ -12,7 +12,7 @@ class Bid(models.Model):
 
 
 class Allocation(models.Model):
-    bidding_object = models.ForeignKey(Bid, on_delete=models.CASCADE)
+    bidding_object = models.OneToOneField(Bid, on_delete=models.CASCADE)
     number_of_token_received = models.IntegerField()
 
     def __str__(self):

@@ -3,8 +3,8 @@ import datetime
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from .models import BidMonitor, Bid, Allocation
-from .serializers import BidMonitorSerializer, AllocationSerializer, BidSerializer
+from .models import BidMonitor, Bid
+from .serializers import BidMonitorSerializer, BidSerializer
 
 
 class CreateBid(generics.CreateAPIView):
@@ -51,5 +51,10 @@ class CreateMonitor(generics.CreateAPIView):
 
 
 class DetailMonitor(generics.RetrieveUpdateDestroyAPIView):
+    queryset = BidMonitor.objects.all()
+    serializer_class = BidMonitorSerializer
+
+
+class AllBidMonitors(generics.ListAPIView):
     queryset = BidMonitor.objects.all()
     serializer_class = BidMonitorSerializer
