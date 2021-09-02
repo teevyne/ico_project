@@ -12,11 +12,11 @@ class Bid(models.Model):
 
 
 class Allocation(models.Model):
-    bidding_object = models.OneToOneField(Bid, on_delete=models.CASCADE)
+    bid_id = models.OneToOneField(Bid, on_delete=models.CASCADE, related_name='bid_object')
     number_of_token_received = models.IntegerField()
 
     def __str__(self):
-        return str(self.bidding_object)
+        return str(self.bid_id)
 
 
 class BidMonitor(models.Model):

@@ -6,7 +6,7 @@ from icoapp.views import (
     AllBids,
     CreateMonitor,
     DetailMonitor,
-    AllBidMonitors
+    AllBidMonitors, AllBidPostAuction, CreateAllocation
 )
 
 urlpatterns = [
@@ -18,4 +18,7 @@ urlpatterns = [
     path('create-bid-monitor', CreateMonitor.as_view()),
     path('get-bid-monitor/<int:pk>', DetailMonitor.as_view()),
 
+    path('all-bids-post-auction/', AllBidPostAuction.as_view()),
+
+    path('create-allocation', CreateAllocation.as_view()),
 ]
