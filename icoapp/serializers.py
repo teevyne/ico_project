@@ -20,7 +20,7 @@ class AllocationSerializer(serializers.ModelSerializer):
         fields = ('bid_id', 'number_of_token_received')
 
 
-class BidMonitorSerializer(serializers.ModelSerializer):
+class OfferingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Offering
         fields = '__all__'

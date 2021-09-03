@@ -6,7 +6,10 @@ from icoapp.views import (
     AllBids,
     CreateMonitor,
     DetailMonitor,
-    AllBidMonitors, AllBidPostAuction, CreateAllocation, CreateUser
+    AllBidMonitors,
+    AllBidPostAuction,
+    CreateAllocation,
+    CreateUser
 )
 
 urlpatterns = [

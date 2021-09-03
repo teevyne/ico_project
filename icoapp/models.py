@@ -1,5 +1,4 @@
 import datetime
-
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
@@ -24,6 +23,12 @@ class Offering(models.Model):
     class Meta:
         ordering = ['-id']
 
+    def clean(self):
+        # Don't allow the open window be greater than close window
+        if self.bidding_window_open >= self.bidding_window_closed:
+            raise ValidationError(_(
+                "The offering opening date must not be greater than the closing date"))
+
 
 class User(models.Model):
     username = models.CharField(max_length=20, unique=True)
@@ -42,14 +47,6 @@ class Bid(models.Model):
 
     def __str__(self):
         return str(self.id)
-
-    def clean(self):
-        monitor = Offering.objects.first()
-        bidding_window = str(monitor.bidding_window)[:19]
-        window = datetime.datetime.strptime(bidding_window, "%Y-%m-%d %H:%M:%S")
-
-        if self.timestamp < window:
-            raise ValidationError(_({"Message": "Sorry! Bidding window is closed for now"}))
 
 
 class Allocation(models.Model):
