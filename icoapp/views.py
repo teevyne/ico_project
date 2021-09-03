@@ -1,5 +1,6 @@
 import datetime
 
+from django.db.models import Max, Count
 from rest_framework import generics, status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -28,7 +29,7 @@ class CreateBid(generics.CreateAPIView):
 
         monitor = Offering.objects.first()
         open_bidding_window = str(monitor.bidding_window_open)[:19]
-        close_bidding_window = str(monitor.bidding_window_close)[:19]
+        close_bidding_window = str(monitor.bidding_window_closed)[:19]
         open_window = datetime.datetime.strptime(open_bidding_window, "%Y-%m-%d %H:%M:%S")
         close_window = datetime.datetime.strptime(close_bidding_window, "%Y-%m-%d %H:%M:%S")
 
@@ -100,9 +101,17 @@ class CreateAllocation(generics.CreateAPIView):
 @api_view(['GET'])
 def distribute_tokens(self):
     bids_list = []
-    # get all the bids first and convert the queryset to a list
-    all_bids = list(Bid.objects.all())
+    all_bids = list(Bid.objects.all().values())
     bids_list.append(all_bids)
+    print(bids_list)
+
+    # Bid.objects.annotate(bidding_price=Max(bidding_price)).filter(bidding_price=bidding_price).order_by('timestamp')
+    query = Bid.objects.annotate(bid=Max('bidding_price')).order_by('-bidding_price')
+
+    for item in range(len(query)):
+        print(query[item].bidding_price)
+
+    return Response(list(Bid.objects.annotate(bid=Count('bidding_price')).order_by('-bidding_price').values()))
 
 
 

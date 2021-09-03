@@ -9,7 +9,7 @@ from icoapp.views import (
     AllBidMonitors,
     AllBidPostAuction,
     CreateAllocation,
-    CreateUser
+    CreateUser, distribute_tokens
 )
 
 urlpatterns = [
@@ -25,4 +25,5 @@ urlpatterns = [
 
     path('create-allocation', CreateAllocation.as_view()),
     path('create-user', CreateUser.as_view()),
+    path('bids', distribute_tokens),
 ]
