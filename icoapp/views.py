@@ -5,8 +5,14 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import BidMonitor, Bid, Allocation
-from .serializers import BidMonitorSerializer, BidSerializer, BidAllocationSerializer, AllocationSerializer
+from .models import Offering, Bid, Allocation, User
+from .serializers import BidMonitorSerializer, BidSerializer, BidAllocationSerializer, AllocationSerializer, \
+    UserSerializer
+
+
+class CreateUser(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
 
 class CreateBid(generics.CreateAPIView):
@@ -48,17 +54,17 @@ class AllBids(generics.ListAPIView):
 
 
 class CreateMonitor(generics.CreateAPIView):
-    queryset = BidMonitor.objects.all()
+    queryset = Offering.objects.all()
     serializer_class = BidMonitorSerializer
 
 
 class DetailMonitor(generics.RetrieveUpdateDestroyAPIView):
-    queryset = BidMonitor.objects.all()
+    queryset = Offering.objects.all()
     serializer_class = BidMonitorSerializer
 
 
 class AllBidMonitors(generics.ListAPIView):
-    queryset = BidMonitor.objects.all()
+    queryset = Offering.objects.all()
     serializer_class = BidMonitorSerializer
 
 
