@@ -25,23 +25,26 @@ class CreateBid(generics.CreateAPIView):
                 {"message": "Something went wrong. Please try again later"},
                 status=status.HTTP_400_BAD_REQUEST)
 
-        creation_datetime = datetime.datetime.now()
+        try:
+            creation_datetime = datetime.datetime.now()
 
-        monitor = Offering.objects.first()
-        open_bidding_window = str(monitor.bidding_window_open)[:19]
-        close_bidding_window = str(monitor.bidding_window_closed)[:19]
-        open_window = datetime.datetime.strptime(open_bidding_window, "%Y-%m-%d %H:%M:%S")
-        close_window = datetime.datetime.strptime(close_bidding_window, "%Y-%m-%d %H:%M:%S")
+            monitor = Offering.objects.first()
+            open_bidding_window = str(monitor.bidding_window_open)[:19]
+            close_bidding_window = str(monitor.bidding_window_closed)[:19]
+            open_window = datetime.datetime.strptime(open_bidding_window, "%Y-%m-%d %H:%M:%S")
+            close_window = datetime.datetime.strptime(close_bidding_window, "%Y-%m-%d %H:%M:%S")
 
-        if open_window <= creation_datetime <= close_window:
-            serializer.save()
-            return Response(
-                {"message": "Your bid has been successfully created on " + str(creation_datetime)},
-                status=status.HTTP_201_CREATED)
-        else:
-            return Response(
-                {"message": "Sorry! The bidding window has closed. You cannot place a bid at this time"},
-                status=status.HTTP_400_BAD_REQUEST)
+            if open_window <= creation_datetime <= close_window:
+                serializer.save()
+                return Response(
+                    {"message": "Your bid has been successfully created on " + str(creation_datetime)},
+                    status=status.HTTP_201_CREATED)
+            else:
+                return Response(
+                    {"message": "Sorry! The bidding window has closed. You cannot place a bid at this time"},
+                    status=status.HTTP_400_BAD_REQUEST)
+        except Offering.DoesNotExist:
+            return Response({"message": "No offering exists yet on this platform. Please create one and continue"})
 
 
 class DetailBid(generics.RetrieveUpdateDestroyAPIView):
@@ -105,7 +108,6 @@ def distribute_tokens(self):
     bids_list.append(all_bids)
     print(bids_list)
 
-    # Bid.objects.annotate(bidding_price=Max(bidding_price)).filter(bidding_price=bidding_price).order_by('timestamp')
     query = Bid.objects.annotate(bid=Max('bidding_price')).order_by('-bidding_price')
 
     for item in range(len(query)):
